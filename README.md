@@ -114,16 +114,6 @@ python manage.py runserver
 
 Visit: `http://127.0.0.1:8000/`
 
-## 📊 ER Diagram
-
-![ER Diagram](docs/er_diagram.png)
-
-## 🎨 Wireframes
-
-- [Dashboard Wireframe](docs/wireframes/dashboard.png)
-- [Subjects Page Wireframe](docs/wireframes/subjects.png)
-- [Timer Page Wireframe](docs/wireframes/timer.png)
-
 ## 🔌 API Endpoints
 
 | Method | Endpoint | Description |
@@ -142,15 +132,6 @@ Visit: `http://127.0.0.1:8000/`
 - XSS protection for user-generated content
 - Session security with timeout mechanisms
 
-## 🎯 Future Enhancements
-
-- Study buddy matching system
-- AI-powered study time recommendations
-- Mobile app (iOS/Android)
-- Integration with Google Calendar
-- Gamification with badges and leaderboards
-- Collaborative virtual study rooms
-
 ## 📱 Responsive Design
 
 StudySync is fully responsive and works seamlessly on:
@@ -161,7 +142,7 @@ StudySync is fully responsive and works seamlessly on:
 ## 👨‍💻 Author
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
+- GitHub: [@yourusername](https://github.com/nourbatniji)
 - Project Trello: [Link to Trello Board]
 
 ## 📅 Project Timeline
@@ -170,9 +151,6 @@ StudySync is fully responsive and works seamlessly on:
 - **Presentation Date**: November 26, 2025
 - **Duration**: 11 days
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
