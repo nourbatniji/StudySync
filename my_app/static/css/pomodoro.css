@@ -1,0 +1,224 @@
+/* Pomodoro Page Styles */
+
+body {
+    background: linear-gradient(180deg, #f7fafc 0%, #ffffff 100%);
+}
+
+/* Timer Container */
+.main {
+    background: white;
+    border-radius: 2rem;
+    padding: 3rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.main p {
+    font-size: 1.25rem;
+    color: #4a5568;
+    margin-bottom: 1rem;
+}
+
+/* Timer Display */
+#timer {
+    font-size: 5rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 2rem 0;
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Current Subject/Task Box */
+#current-box {
+    background: #f7fafc;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin: 1.5rem auto;
+    color: #4a5568;
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+#current-subject,
+#current-task {
+    font-weight: 700;
+    color: #0ea5e9;
+}
+
+/* Control Buttons */
+.control-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.control-buttons button {
+    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-buttons button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+
+.control-buttons button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.control-buttons select {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 50px;
+    font-weight: 600;
+    color: #4a5568;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-buttons select:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+/* Statistics Cards */
+.border.bg-white {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.border.bg-white:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.border.bg-white h1 {
+    color: #0ea5e9;
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Exam and Task Selection */
+.border.p-4 {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.border.p-4 h2 {
+    color: #1a202c;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.task-input {
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.task-input:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+/* Finish Modal */
+.finished .modal-content {
+    border-radius: 1.5rem;
+    border: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    padding: 2rem;
+}
+
+.finished .modal-header {
+    border: none;
+    padding-bottom: 0;
+}
+
+.finished .modal-body h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin-bottom: 1rem;
+}
+
+.finished .modal-body h3 {
+    font-size: 1.5rem;
+    color: #4a5568;
+    margin-bottom: 2rem;
+}
+
+.finished .modal-body button {
+    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    color: white;
+    border: none;
+    padding: 0.875rem 2.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.finished .modal-body button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+
+.finished .modal-body form:nth-child(3) button {
+    background: white;
+    color: #0ea5e9;
+    border: 2px solid #0ea5e9;
+}
+
+.finished .modal-body form:nth-child(3) button:hover {
+    background: #f7fafc;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #timer {
+        font-size: 3.5rem;
+    }
+
+    .main {
+        padding: 2rem;
+    }
+
+    .control-buttons {
+        flex-direction: column;
+    }
+
+    .control-buttons button,
+    .control-buttons select {
+        width: 100%;
+    }
+
+    .finished .modal-body h1 {
+        font-size: 2rem;
+    }
+
+    .finished .modal-body h3 {
+        font-size: 1.25rem;
+    }
+}

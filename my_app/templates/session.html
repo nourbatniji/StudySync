@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessions</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Static Files -->
+    <link rel="stylesheet" href="{% static 'css/session.css' %}">
+    <link rel="stylesheet" href="{% static 'css/nav.css' %}">
+
+
+</head>
+
+<body>
+   <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
+                <div class="logo-icon"></div>
+                StudySync
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if request.session.is_logged %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/exams_page">Exams</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/sessions_page">Sessions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pomodoro_page">Pomodoro</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-signout" href="/signout">Sign Out</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-primary btn-sm px-4 rounded-pill" href="/signup_page">Get Started</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="container pt-4">
+        <div class="d-flex justify-content-between align-items-baseline pt-4">
+            <div>
+                <h1 class="fs-3 fw-bold mb-2">Study Sessions</h1>
+                <p class="text-secondary">Schedule and track your study sessions</p>
+            </div>
+            <!-- ADD SESSION -->
+            <div class="ms-auto">
+                <!-- Post Modal Button  -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#postSessionModal">
+                    + Add Session
+                </button>
+            </div>
+        </div>
+
+        <!-- SESSIONS ALREADY CREATED -->
+        <div class="border rounded-4 shadow-sm bg-white my-4">
+            <div class="pt-4 px-4">
+                <h5>Upcoming Sessions</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Date & Time</th>
+                                <th>Created By</th>
+                                <th>Attendees</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for session in sessions %}
+                            <tr >
+                                <td>{{ session.title }}</td>
+                                <td>{{ session.sess_date|date:'M j, Y' }} at {{ session.sess_time|time:'g:i A' }}</td>
+                                <td>{{ session.created_by.username }}{{ session.created_by.id }}</td>
+                                <td class="d-flex" id="count-{{ session.id }}">
+                                    <span><i class="fa-solid fa-user-group"></i></span>
+                                    <p id="count">{{ session.attendees.count }}</p>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <!-- Join Button (visible for everyone) -->
+                                        <a href="{{ session.meet_link }}" target="_blank" class="btn btn-join">
+                                            <i class="fa-solid fa-video me-1"></i> Join
+                                        </a>
+
+                                        {% if session.created_by.id == userId %}
+                                        <!-- Delete for Creator -->
+                                        <form action="/delete_session" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="session_id" id="session_id"
+                                                value="{{ session.id }}">
+                                            <button class="btn btn-outline-danger">Delete</button>
+                                        </form>
+                                        <!-- Update for Creator -->
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
+                                            data-bs-target="#updateSessionModal_{{ session.id }}">
+                                            Edit
+                                        </button>
+
+                                        {% else %}
+                                        <!-- Attend for other Users -->
+                                        <form action="/attend_session" method="post" id="attend-form">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="session_id" id="session_id"
+                                                value="{{ session.id }}">
+                                            <input type="hidden" name="user_id" id="user_id" value="{{ userId }}">
+                                            <button class="btn btn-attend">Attend</button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Session Modal -->
+    <div class="modal" id="postSessionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4">
+                <div class="modal-header p-0 border-0 align-items-start">
+                    <div>
+                        <h5 class="fw-semibold mb-2">Schedule Study Session</h5>
+                        <p class="text-secondary paragrapgh">Plan your focused study time</p>
+                    </div>
+                    <button type="button" class="btn-close top-0" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <form id="CreateSession" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" id="user_id" value="{{ userId }}">
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Session Title</label>
+                            <input class="task-input rounded-4 mb-2 w-100 p-2" type="text" class="form-control"
+                                name="title" id="title" required>
+                            <p id="title_valid" class="text-danger"></p>
+                        </div>
+
+                        <!-- Meet -->
+                        <div class="mb-3">
+                            <label for="meet_link" class="form-label">Google Meet Link</label>
+                            <input class="task-input rounded-4 mb-2 w-100 p-2" type="url" class="form-control"
+                                name="meet_link" id="meet_link" required>
+                            <p id="url_valid" class="text-danger"></p>
+                            <p id="url_not_unique" class="text-danger"></p>
+                        </div>
+
+                        <div class="d-flex gap-4">
+                            <!-- Date -->
+                            <div class="w-50">
+                                <label for="sess_date" class="form-label">Date</label>
+                                <input class="task-input rounded-4 mb-2 w-100 p-2" type="date" class="form-control"
+                                    name="sess_date" id="sess_date" required>
+                                <p id="date_valid" class="text-danger"></p>
+                            </div>
+
+                            <!-- Time -->
+                            <div class="w-50">
+                                <label for="sess_time" class="form-label">Time</label>
+                                <input class="task-input rounded-4 mb-2 w-100 p-2" type="time" class="form-control"
+                                    name="sess_time" id="sess_time" required>
+                            </div>
+                        </div>
+
+                        <!-- Duration -->
+                        <div class="mb-3">
+                            <label for="duration" class="form-label">Duration</label>
+                            <select name="duration" id="duration" required>
+                                <option value="1">1 hr</option>
+                                <option value="2">2 hr</option>
+                                <option value="3">3 hr</option>
+                                <option value="4">4 hr</option>
+                                <option value="5">5 hr</option>
+                                <option value="6">6 hr</option>
+                                <option value="7">7 hr</option>
+                                <option value="8">8 hr</option>
+                                <option value="9">9 hr</option>
+                                <option value="10">10 hr</option>
+                                <option value="11">11 hr</option>
+                                <option value="12">12 hr</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary">Add Session</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Session Modal -->
+    {% for session in sessions %}
+    <div class="modal" id="updateSessionModal_{{ session.id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="UpdateSession" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" id="user_id" value="{{ session.created_by.id }}">
+                        <input type="hidden" name="session_id" id="session_id" value="{{ session.id }}">
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Session Title</label>
+                            <input type="text" class="form-control" name="title" id="title" value="{{ session.title }}"
+                                required>
+                            <p class="edit_title_valid text-danger"></p>
+                        </div>
+
+                        <!-- Meet -->
+                        <div class="mb-3">
+                            <label for="meet_link" class="form-label">Google Meet Link</label>
+                            <input type="url" class="form-control" name="meet_link" id="meet_link"
+                                value="{{ session.meet_link }}" required>
+                            <p class="edit_url_not_unique text-danger"></p>
+                        </div>
+
+                        <!-- Date -->
+                        <div class="mb-3">
+                            <label for="sess_date" class="form-label">Date</label>
+                            <input type="date" class="form-control" name="sess_date" id="sess_date"
+                                value="{{ session.sess_date|date:'Y-m-d' }}" required>
+                            <p class="edit_date_valid text-danger"></p>
+
+                        </div>
+
+                        <!-- Time -->
+                        <div class="mb-3">
+                            <label for="sess_time" class="form-label">Time</label>
+                            <input type="time" class="form-control" name="sess_time" id="sess_time"
+                                value="{{ session.sess_time|time:'H:i' }}" required>
+                        </div>
+
+                        <!-- Duration -->
+                        <div class="mb-3">
+                            <label for="duration" class="form-label">Duration</label>
+                            <input type="int" class="form-control" name="duration" id="duration"
+                                value="{{ session.duration }}" required>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary">Update Session</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <script src="{% static 'js/session.js' %}"></script>
+</body>
+
+</html>

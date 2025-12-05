@@ -1,0 +1,230 @@
+/* Session Page Styles */
+
+/* Header */
+.container h1 {
+    color: #1a202c;
+}
+
+/* Table Styles */
+.table-responsive {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead {
+    background: #f7fafc;
+}
+
+.table thead th {
+    color: #4a5568;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 1rem;
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table tbody tr:hover {
+    background-color: #f7fafc;
+}
+
+/* Attendee Counter */
+[id^="count-"] {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#count {
+    margin: 0;
+    font-weight: 600;
+    color: #0ea5e9;
+}
+
+
+.fa-user-group {
+    color: #0ea5e9;
+}
+
+/* Buttons */
+.btn-join {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-join:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+    color: white;
+}
+
+.btn-attend {
+    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-attend:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+}
+
+.btn-attend:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-attended {
+    background: #e2e8f0;
+    color: #4a5568;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: default;
+}
+
+.btn-outline-danger {
+    color: #e53e3e;
+    border-color: #e53e3e;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    background-color: #e53e3e;
+    border-color: #e53e3e;
+    color: white;
+}
+
+.btn-outline-secondary {
+    color: #4a5568;
+    border-color: #cbd5e0;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #4a5568;
+    border-color: #4a5568;
+    color: white;
+}
+
+/* Modal Styles */
+.modal-content {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    padding: 1.5rem;
+}
+
+.modal-header h5 {
+    color: #1a202c;
+    font-weight: 700;
+}
+
+.modal-header .paragrapgh {
+    color: #718096;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* Form Styles */
+.form-label {
+    color: #4a5568;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.task-input {
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.task-input:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    background: white;
+    color: #1a202c;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+select:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+/* Error Messages */
+.text-danger {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Primary Button in Modal */
+.modal-body .btn-primary {
+    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.modal-body .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.875rem;
+    }
+
+    .d-flex.gap-2 {
+        flex-direction: column;
+        gap: 0.5rem !important;
+    }
+}

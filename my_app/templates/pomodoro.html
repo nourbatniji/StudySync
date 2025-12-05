@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
+     <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/pomodoro.css' %}">
+    <link rel="stylesheet" href="{% static 'css/nav.css' %}">
+
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
+                <div class="logo-icon"></div>
+                StudySync
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if request.session.is_logged %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/exams_page">Exams</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sessions_page">Sessions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/pomodoro_page">Pomodoro</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-signout" href="/signout">Sign Out</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-primary btn-sm px-4 rounded-pill" href="/signup_page">Get Started</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section>
+        <!-- TIMER -->
+        <div class="container w-75 d-flex align-items-center justify-content-center flex-column">
+            <div class="main my-5 w-100">
+                <p>📚 Study Session</p>
+                <div id="timer">1:00</div>
+                <p>Ready to focus?</p>
+
+                <!-- CHOSEN EXAM & TASK -->
+                <div id="current-box" class="w-50 m-auto text-start" style="display:none;">
+                    Currently studying: <span id="current-subject"></span><br>
+                    Task: <span id="current-task"></span>
+                </div>
+
+                <!-- EXAM CONTROL BUTTONS -->
+                <div class="control-buttons">
+                    <button onclick="togglePauseResume()">
+                        Pause
+                    </button>
+                    <button onclick="restartTimer()">
+                        Restart
+                    </button>
+                    <select name="chosen-time" id="chosen-time" onchange="chooseTime()">
+                        <option>1 min</option>
+                        <option value="25">25 min</option>
+                        <option value="50">50 min</option>
+                        <option value="100">100 min</option>
+                    </select>
+                    <button onclick="startTimer()" disabled id="startTimer">
+                        Start
+                    </button>
+                </div>
+            </div>
+
+            <!-- HISTORY | SESSIONS & MINUTES OF STUDY -->
+            <div class="d-flex align-items-center justify-content-between text-center gap-3 w-100">
+                <div class="border w-100 bg-white p-3 rounded">
+                    <h1 class="fw-bold">{% if sessions %} {{ sessions }} {% else %} 0 {% endif %}</h1 class="fw-bold">
+                    <p class="text-secondary">Sessions Completed</p>
+                </div>
+                <div class="border w-100 bg-white p-3 rounded">
+                    <h1 class="fw-bold" id="minutes-studied">
+                        {% if minutes %} {{ minutes }} {% else %} 0 {% endif %}
+                    </h1>
+                    <p class="text-secondary">Minutes Studied</p>
+
+                    <form id="pomodoroForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="minutes" id="minutesInput">
+                    </form>
+                </div>
+            </div>
+
+            <!-- CHOOSE EXAM -->
+            <div class="border p-4 m-4 w-100">
+                <h2>Choose Exam</h2>
+                <form action="/select_exam" method="post">
+                    {% csrf_token %}
+                    <select name="exam_id" id="exam_id" class="task-input rounded-4 mb-2 w-100 p-2">
+                        <option value="" selected disabled>Select</option>
+                        {% for exam in exams %}
+                        <option value="{{ exam.id }}">{{ exam.title }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+
+            <!-- CHOOSE TASK -->
+            <div class="border p-4 m-4 w-100">
+                <label for="task_id">Choose Task</label>
+                <select name="task_id" id="task_id" class="task-input rounded-4 mb-2 w-100 p-2">
+                    <option value="" id="no-option" selected disabled>Select</option>
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- FINISHED MODAL -->
+    <div class="modal fade finished" id="finishModal" tabindex="-1" aria-labelledby="finishLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h1>Session Complete! 🎉</h1>
+                    <h3>Have You Finished the Task?</h3>
+                    <form action="/log_task" method="post" id="finished-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="task_id" id="finished_task_id">
+                        <button>Yes</button>
+                    </form>
+                    <form action="/pomodoro_page" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="session_counter" id="finished_session_counter" value="0">
+                        <button>No, Start Another</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/pomodoro.js' %}"></script>
+</body>
+
+
+</html>

@@ -1,0 +1,249 @@
+/* Exam Page Styles */
+
+/* Header */
+.container h1 {
+    color: #1a202c;
+}
+
+/* Add Exam Button */
+.exam-btn {
+    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    color: white;
+    border: none;
+    padding: 0.625rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.exam-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+    color: white;
+}
+
+/* Exam Cards */
+.exam-card {
+    transition: all 0.3s ease;
+}
+
+.exam-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.exam-card h3 {
+    color: #1a202c;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.exam-card .text-secondary {
+    font-size: 0.9rem;
+}
+
+.exam-card .completed-count {
+    font-weight: 700;
+    color: #0ea5e9;
+}
+
+/* Buttons */
+.btn.edit {
+    background: white;
+    color: #4a5568;
+    border: 1px solid #cbd5e0;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn.edit:hover {
+    background: #f7fafc;
+    border-color: #0ea5e9;
+    color: #0ea5e9;
+}
+
+.btn.task {
+    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn.task:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+    color: white;
+}
+
+.trash-btn {
+    transition: all 0.3s ease;
+}
+
+.trash-btn:hover {
+    background-color: #e53e3e;
+    border-color: #e53e3e;
+    color: white !important;
+}
+
+/* Task Rows */
+.task-row {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.task-row:hover {
+    background-color: #f7fafc;
+}
+
+.task-check {
+    background: white;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.task-check-input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    border: 2px solid #cbd5e0;
+    margin-right: 0.75rem;
+}
+
+.task-check-input:checked {
+    background-color: #0ea5e9;
+    border-color: #0ea5e9;
+}
+
+/* Delete Button */
+.delete-btn {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.task-row:hover .delete-btn {
+    opacity: 1;
+}
+
+/* Priority Badges */
+.priority-wrapper {
+    position: absolute;
+    right: 4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.task-row:hover .priority-wrapper {
+    opacity: 1;
+}
+
+.priority-wrapper span {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.priority-wrapper .low {
+    background-color: #c6f6d5;
+    color: #22543d;
+}
+
+.priority-wrapper .medium {
+    background-color: #feebc8;
+    color: #7c2d12;
+}
+
+.priority-wrapper .high {
+    background-color: #fed7d7;
+    color: #742a2a;
+}
+
+/* Modal Styles */
+.modal-content {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    padding: 1.5rem;
+}
+
+.modal-header h5 {
+    color: #1a202c;
+    font-weight: 700;
+}
+
+.modal-header .paragrapgh {
+    color: #718096;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* Form Styles */
+.form-label {
+    color: #4a5568;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.task-input {
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.task-input:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.form-select {
+    cursor: pointer;
+}
+
+/* Error Messages */
+.text-danger {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .exam-card h3 {
+        font-size: 1.25rem;
+    }
+
+    .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.875rem;
+    }
+
+    .priority-wrapper {
+        position: static;
+        transform: none;
+        opacity: 1;
+        margin-top: 0.5rem;
+    }
+
+    .delete-btn {
+        opacity: 1;
+    }
+}

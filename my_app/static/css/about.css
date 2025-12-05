@@ -1,0 +1,254 @@
+/* About Page Styles */
+
+.landing-body {
+    background: #f8f9fa;
+}
+
+/* About Hero */
+.about-hero {
+    padding: 5rem 0 3rem;
+    background: linear-gradient(180deg, rgba(14, 165, 233, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+    text-align: center;
+}
+
+.about-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #1a202c;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+.about-title span {
+    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.about-subtitle {
+    font-size: 1.25rem;
+    color: #4a5568;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Differentiation Section */
+.differentiation-section {
+    padding: 3rem 0;
+}
+
+.diff-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 3rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.diff-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.highlight-text {
+    color: #0ea5e9;
+    font-weight: 700;
+}
+
+.highlight-blue {
+    color: #4299e1;
+    font-weight: 700;
+}
+
+.highlight-yellow {
+    color: #f6ad55;
+    font-weight: 700;
+}
+
+/* How It Works Section */
+.how-it-works-section {
+    padding: 4rem 0;
+    background: white;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1a202c;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.step-card {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    background: #f7fafc;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.step-card:hover {
+    transform: translateX(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.75rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.step-content h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.75rem;
+}
+
+.step-content p {
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.status-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0 0;
+}
+
+.status-list li {
+    padding: 0.5rem 0;
+    font-weight: 600;
+}
+
+.status-list i {
+    margin-right: 0.5rem;
+}
+
+/* Panic Mode Section */
+.panic-mode-section {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%);
+}
+
+.panic-card {
+    background: white;
+    border: 2px solid #fed7d7;
+    border-radius: 1rem;
+    padding: 3rem;
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.1);
+}
+
+.panic-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f56565 0%, #ed8936 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.panic-text-red {
+    color: #e53e3e;
+    font-weight: 700;
+}
+
+.panic-text-yellow {
+    color: #d69e2e;
+    font-weight: 700;
+}
+
+/* Features Grid Section */
+.features-grid-section {
+    padding: 4rem 0;
+}
+
+.feature-grid-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.feature-grid-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-color: #0ea5e9;
+}
+
+.grid-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+}
+
+.cta-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-title {
+        font-size: 2.25rem;
+    }
+
+    .step-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .step-number {
+        margin: 0 auto;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .cta-title {
+        font-size: 2rem;
+    }
+}
