@@ -142,8 +142,8 @@ StudySync is fully responsive and works seamlessly on:
 ## 👨‍💻 Author
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/nourbatniji)
-- Project Trello: [Link to Trello Board]
+- GitHub: [https://github.com/nourbatniji]
+- Project Trello:
 
 ## 📅 Project Timeline
 
