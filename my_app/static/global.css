@@ -1,0 +1,61 @@
+/* StudySync Global Styles & Design System */
+
+:root {
+    /* Theme color palette from the user's reference image */
+    --primary-color: #3B3F8C;       /* Deep Indigo - Primary / Nav / Headings */
+    --primary-hover: #2D3170;       /* Darker Deep Indigo */
+    --primary-light: #EEF1F9;       /* Light tint of deep indigo */
+    
+    --accent-color: #4E9AF1;        /* Sky Blue - Accent / CTAs / Interactive */
+    --accent-hover: #3583DA;        /* Darker Sky Blue */
+    --accent-light: #EEF5FE;        /* Very light tint of sky blue */
+    
+    --bg-light: #F7F8FC;            /* Ghost White - Page background */
+    --card-bg: #FFFFFF;             /* White - Cards */
+    
+    --text-dark: #1A1D2E;           /* Ink Black - Headings */
+    --text-medium: #4E5863;         /* Slate - Body text */
+    --text-muted: #9CA3AF;          /* Muted - Captions */
+    
+    --border-color: #E5E7EB;        /* Light Gray - Borders / Dividers */
+    --border-focus: #4E9AF1;        /* Sky Blue border focus */
+    
+    --success-color: #2EC4A9;       /* Mint Green - Progress / Done */
+    --success-bg: #EAFBF6;
+    --success-border: #AEF0E3;
+    
+    --warning-color: #F5A623;       /* Amber - Warnings / Streaks */
+    --warning-bg: #FFF6E9;
+    --warning-border: #FDE2B4;
+    
+    --danger-color: #F15B6C;        /* Coral Red - Overdue / Alerts / Errors */
+    --danger-bg: #FFEFF1;
+    --danger-border: #FFCAD0;
+    
+    /* Brand styling helper variables */
+    --logo-gradient: linear-gradient(135deg, #3B3F8C 0%, #4E9AF1 100%);
+    --btn-gradient: #4E9AF1;        /* Accent Sky Blue for CTAs */
+    --btn-gradient-hover: #3583DA;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(26, 29, 46, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(26, 29, 46, 0.05), 0 2px 4px -1px rgba(26, 29, 46, 0.03);
+    --shadow-lg: 0 10px 15px -3px rgba(26, 29, 46, 0.04), 0 4px 6px -2px rgba(26, 29, 46, 0.02);
+}
+
+/* Base Body Styling resets */
+body {
+    background-color: var(--bg-light);
+    color: var(--text-medium);
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Gradient Text Helper */
+.text-gradient {
+    background: var(--logo-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}

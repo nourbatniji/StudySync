@@ -18,7 +18,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="{% static 'global.css' %}">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/exam.css' %}">
@@ -31,7 +34,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
-                <div class="logo-icon"></div>
+                <div class="logo-icon"><i class="fa-solid fa-graduation-cap text-white" style="font-size: 0.95rem;"></i></div>
                 StudySync
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"

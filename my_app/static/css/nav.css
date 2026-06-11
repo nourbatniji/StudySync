@@ -4,14 +4,14 @@
 }
 
 body {
-    background-color: #f8f9fa;
+    background-color: var(--bg-light);
 }
 
 /* Logo Icon */
 .logo-icon {
     width: 32px;
     height: 32px;
-    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    background: var(--logo-gradient);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -20,13 +20,13 @@ body {
 
 .navbar-brand {
     font-size: 1.5rem;
-    color: #1a202c !important;
+    color: var(--text-dark) !important;
     font-weight: 700;
 }
 
 /* Navigation Links */
 .nav-link {
-    color: #4a5568 !important;
+    color: var(--text-medium) !important;
     font-weight: 500;
     padding: 0.5rem 1rem !important;
     transition: all 0.3s ease;
@@ -34,11 +34,11 @@ body {
 }
 
 .nav-link:hover {
-    color: #0ea5e9 !important;
+    color: var(--primary-color) !important;
 }
 
 .nav-link.active {
-    color: #0ea5e9 !important;
+    color: var(--primary-color) !important;
     font-weight: 600;
 }
 
@@ -49,53 +49,53 @@ body {
     left: 1rem;
     right: 1rem;
     height: 2px;
-    background: linear-gradient(90deg, #0ea5e9 0%, #06b6d4 100%);
+    background: var(--logo-gradient);
     border-radius: 2px;
 }
 
 /* Sign Out Button */
 .btn-signout {
-    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    background: var(--btn-gradient);
     color: white !important;
     border: none;
     padding: 0.5rem 1.5rem;
     border-radius: 50px;
     font-weight: 600;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+    box-shadow: 0 2px 8px rgba(85, 81, 255, 0.2);
 }
 
 .btn-signout:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+    box-shadow: 0 4px 12px rgba(85, 81, 255, 0.35);
 }
 
 /* Primary Button */
 .btn-primary {
-    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    background: var(--btn-gradient);
     border: none;
     padding: 0.5rem 1.5rem;
     border-radius: 50px;
     font-weight: 600;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
+    box-shadow: 0 2px 8px rgba(85, 81, 255, 0.2);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
-    background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%);
+    box-shadow: 0 4px 12px rgba(85, 81, 255, 0.35);
+    background: var(--btn-gradient-hover);
 }
 
 /* Navbar Shadow */
 .navbar {
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
 /* Footer Styles */
 footer {
     padding: 2rem 0;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--border-color);
     margin-top: 4rem;
 }
 
@@ -105,13 +105,13 @@ footer {
     gap: 0.75rem;
     font-weight: 700;
     font-size: 1.25rem;
-    color: #1a202c;
+    color: var(--text-dark);
 }
 
 .footer-logo-icon {
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    background: var(--logo-gradient);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -121,11 +121,11 @@ footer {
 }
 
 .footer-links a {
-    color: #4a5568;
+    color: var(--text-medium);
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .footer-links a:hover {
-    color: #0ea5e9;
+    color: var(--primary-color);
 }

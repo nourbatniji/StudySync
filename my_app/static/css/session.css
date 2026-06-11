@@ -2,7 +2,7 @@
 
 /* Header */
 .container h1 {
-    color: #1a202c;
+    color: var(--text-dark);
 }
 
 /* Table Styles */
@@ -16,24 +16,24 @@
 }
 
 .table thead {
-    background: #f7fafc;
+    background: var(--secondary-light);
 }
 
 .table thead th {
-    color: #4a5568;
+    color: var(--text-medium);
     font-weight: 600;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--border-color);
     padding: 1rem;
 }
 
 .table tbody td {
     padding: 1rem;
     vertical-align: middle;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .table tbody tr:hover {
-    background-color: #f7fafc;
+    background-color: var(--secondary-light);
 }
 
 /* Attendee Counter */
@@ -46,17 +46,17 @@
 #count {
     margin: 0;
     font-weight: 600;
-    color: #0ea5e9;
+    color: var(--primary-color);
 }
 
 
 .fa-user-group {
-    color: #0ea5e9;
+    color: var(--primary-color);
 }
 
 /* Buttons */
 .btn-join {
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -71,12 +71,12 @@
 
 .btn-join:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
     color: white;
 }
 
 .btn-attend {
-    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    background: var(--btn-gradient);
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -87,7 +87,9 @@
 
 .btn-attend:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+    box-shadow: 0 4px 12px rgba(85, 81, 255, 0.25);
+    background: var(--btn-gradient-hover);
+    color: white;
 }
 
 .btn-attend:disabled {
@@ -97,8 +99,8 @@
 }
 
 .btn-attended {
-    background: #e2e8f0;
-    color: #4a5568;
+    background: var(--border-color);
+    color: var(--text-medium);
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 8px;
@@ -107,26 +109,26 @@
 }
 
 .btn-outline-danger {
-    color: #e53e3e;
-    border-color: #e53e3e;
+    color: var(--danger-color);
+    border-color: var(--danger-color);
     transition: all 0.3s ease;
 }
 
 .btn-outline-danger:hover {
-    background-color: #e53e3e;
-    border-color: #e53e3e;
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
     color: white;
 }
 
 .btn-outline-secondary {
-    color: #4a5568;
-    border-color: #cbd5e0;
+    color: var(--text-medium);
+    border-color: var(--border-color);
     transition: all 0.3s ease;
 }
 
 .btn-outline-secondary:hover {
-    background-color: #4a5568;
-    border-color: #4a5568;
+    background-color: var(--secondary-hover);
+    border-color: var(--secondary-hover);
     color: white;
 }
 
@@ -134,7 +136,7 @@
 .modal-content {
     border-radius: 1rem;
     border: none;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-lg);
 }
 
 .modal-header {
@@ -142,12 +144,12 @@
 }
 
 .modal-header h5 {
-    color: #1a202c;
+    color: var(--text-dark);
     font-weight: 700;
 }
 
 .modal-header .paragrapgh {
-    color: #718096;
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin: 0;
 }
@@ -158,48 +160,49 @@
 
 /* Form Styles */
 .form-label {
-    color: #4a5568;
+    color: var(--text-medium);
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
 
 .task-input {
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     transition: all 0.3s ease;
 }
 
 .task-input:focus {
     outline: none;
-    border-color: #0ea5e9;
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(85, 81, 255, 0.15);
 }
 
 select {
     width: 100%;
     padding: 0.5rem;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     border-radius: 1rem;
     background: white;
-    color: #1a202c;
+    color: var(--text-dark);
     font-size: 1rem;
     transition: all 0.3s ease;
 }
 
 select:focus {
     outline: none;
-    border-color: #0ea5e9;
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(85, 81, 255, 0.15);
 }
 
 /* Error Messages */
 .text-danger {
     font-size: 0.875rem;
     margin-top: 0.25rem;
+    color: var(--danger-color) !important;
 }
 
 /* Primary Button in Modal */
 .modal-body .btn-primary {
-    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    background: var(--btn-gradient);
     border: none;
     padding: 0.75rem 2rem;
     border-radius: 8px;
@@ -209,7 +212,8 @@ select:focus {
 
 .modal-body .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+    box-shadow: 0 4px 12px rgba(85, 81, 255, 0.25);
+    background: var(--btn-gradient-hover);
 }
 
 /* Responsive Design */

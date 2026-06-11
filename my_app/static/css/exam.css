@@ -2,12 +2,12 @@
 
 /* Header */
 .container h1 {
-    color: #1a202c;
+    color: var(--text-dark);
 }
 
 /* Add Exam Button */
 .exam-btn {
-    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    background: var(--btn-gradient);
     color: white;
     border: none;
     padding: 0.625rem 1.5rem;
@@ -18,7 +18,8 @@
 
 .exam-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+    box-shadow: 0 4px 12px rgba(85, 81, 255, 0.25);
+    background: var(--btn-gradient-hover);
     color: white;
 }
 
@@ -29,11 +30,11 @@
 
 .exam-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: var(--shadow-lg) !important;
 }
 
 .exam-card h3 {
-    color: #1a202c;
+    color: var(--text-dark);
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
@@ -45,14 +46,14 @@
 
 .exam-card .completed-count {
     font-weight: 700;
-    color: #0ea5e9;
+    color: var(--primary-color);
 }
 
 /* Buttons */
 .btn.edit {
     background: white;
-    color: #4a5568;
-    border: 1px solid #cbd5e0;
+    color: var(--text-medium);
+    border: 1px solid var(--border-color);
     padding: 0.5rem 1rem;
     border-radius: 8px;
     font-weight: 600;
@@ -60,13 +61,13 @@
 }
 
 .btn.edit:hover {
-    background: #f7fafc;
-    border-color: #0ea5e9;
-    color: #0ea5e9;
+    background: var(--secondary-light);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
 }
 
 .btn.task {
-    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    background: var(--btn-gradient);
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -77,7 +78,8 @@
 
 .btn.task:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+    box-shadow: 0 4px 12px rgba(85, 81, 255, 0.25);
+    background: var(--btn-gradient-hover);
     color: white;
 }
 
@@ -86,8 +88,8 @@
 }
 
 .trash-btn:hover {
-    background-color: #e53e3e;
-    border-color: #e53e3e;
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
     color: white !important;
 }
 
@@ -98,26 +100,27 @@
 }
 
 .task-row:hover {
-    background-color: #f7fafc;
+    background-color: var(--secondary-light);
 }
 
 .task-check {
     background: white;
     padding: 1rem;
     transition: all 0.3s ease;
+    border: 1px solid var(--border-color) !important;
 }
 
 .task-check-input {
     width: 20px;
     height: 20px;
     cursor: pointer;
-    border: 2px solid #cbd5e0;
+    border: 2px solid var(--border-color);
     margin-right: 0.75rem;
 }
 
 .task-check-input:checked {
-    background-color: #0ea5e9;
-    border-color: #0ea5e9;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 /* Delete Button */
@@ -157,25 +160,25 @@
 }
 
 .priority-wrapper .low {
-    background-color: #c6f6d5;
-    color: #22543d;
+    background-color: var(--success-bg);
+    color: var(--success-color);
 }
 
 .priority-wrapper .medium {
-    background-color: #feebc8;
-    color: #7c2d12;
+    background-color: var(--warning-bg);
+    color: #b45309;
 }
 
 .priority-wrapper .high {
-    background-color: #fed7d7;
-    color: #742a2a;
+    background-color: var(--danger-bg);
+    color: var(--danger-color);
 }
 
 /* Modal Styles */
 .modal-content {
     border-radius: 1rem;
     border: none;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-lg);
 }
 
 .modal-header {
@@ -183,12 +186,12 @@
 }
 
 .modal-header h5 {
-    color: #1a202c;
+    color: var(--text-dark);
     font-weight: 700;
 }
 
 .modal-header .paragrapgh {
-    color: #718096;
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin: 0;
 }
@@ -199,20 +202,20 @@
 
 /* Form Styles */
 .form-label {
-    color: #4a5568;
+    color: var(--text-medium);
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
 
 .task-input {
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     transition: all 0.3s ease;
 }
 
 .task-input:focus {
     outline: none;
-    border-color: #0ea5e9;
-    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(85, 81, 255, 0.15);
 }
 
 .form-select {
@@ -223,6 +226,7 @@
 .text-danger {
     font-size: 0.875rem;
     margin-top: 0.25rem;
+    color: var(--danger-color) !important;
 }
 
 /* Responsive Design */
