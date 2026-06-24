@@ -21,6 +21,17 @@ A Django-based study planning app that helps students stay on track with adaptiv
 
 ![Database Schema](docs/schema.png)
 
+## Wireframes
+
+**Login, Signup, Landing & About**
+![Wireframes - Auth & Landing](docs/wireframes-auth.jpg)
+
+**Dashboard, Exams & Pomodoro**
+![Wireframes - Main Pages](docs/wireframes-main.jpg)
+
+**Study Sessions**
+![Wireframes - Sessions](docs/wireframes-sessions.jpg)
+
 ## Setup
 
 1. Clone the repo and create a virtual environment
@@ -70,4 +81,4 @@ Visit `http://127.0.0.1:8000/`
 
 ## Author
 
-Nour — [GitHub](https://github.com/nourbatniji)
+Nour — [GitHub](https://github.com/nourbatniji) — [Trello Board](https://trello.com/b/BsnutWR7/studysync)
