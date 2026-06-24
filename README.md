@@ -19,61 +19,7 @@ A Django-based study planning app that helps students stay on track with adaptiv
 
 ## Database Schema
 
-```mermaid
-erDiagram
-    User {
-        INT idUser PK
-        VARCHAR username
-        VARCHAR email
-        VARCHAR password
-        INT phonenumber
-        DATETIME created_at
-    }
-    Exam {
-        INT idExam PK
-        INT user_id FK
-        VARCHAR title
-        DATETIME exam_date
-        INT total_chapters
-        INT completed_chapters
-        DATETIME created_at
-    }
-    StudyTask {
-        INT idStudyTask PK
-        INT user_id FK
-        INT exam_id FK
-        VARCHAR title
-        TINYINT is_done
-        DATETIME created_at
-    }
-    StudySession {
-        INT idStudySession PK
-        INT user_id FK
-        INT exam_id FK
-        INT task_id FK
-        DATETIME start_time
-        INT duration_minutes
-        TINYINT is_public
-        TINYINT status
-        DATETIME created_at
-    }
-    StudyStreak {
-        INT idStudyStreak PK
-        INT user_id FK
-        DATETIME date
-        INT minutes_studied
-        INT sessions_completed
-        DATETIME created_at
-    }
-
-    User ||--o{ Exam : "has"
-    User ||--o{ StudyTask : "has"
-    User ||--o{ StudySession : "has"
-    User ||--o{ StudyStreak : "has"
-    Exam ||--o{ StudyTask : "has"
-    Exam ||--o{ StudySession : "has"
-    StudyTask ||--o{ StudySession : "has"
-```
+![Database Schema](docs/schema.png)
 
 ## Setup
 
