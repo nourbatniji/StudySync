@@ -78,80 +78,86 @@
         </div>
     </nav>
 
-    <section>
+    <section class="py-4">
         <!-- TIMER -->
-        <div class="container w-75 d-flex align-items-center justify-content-center flex-column">
-            <div class="main my-5 w-100">
-                <p>📚 Study Session</p>
-                <div id="timer">1:00</div>
-                <p>Ready to focus?</p>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-6 d-flex flex-column align-items-center gap-4">
+                    
+                    <div class="main w-100 my-3">
+                        <p>📚 Study Session</p>
+                        <div id="timer">1:00</div>
+                        <p>Ready to focus?</p>
 
-                <!-- CHOSEN EXAM & TASK -->
-                <div id="current-box" class="w-50 m-auto text-start" style="display:none;">
-                    Currently studying: <span id="current-subject"></span><br>
-                    Task: <span id="current-task"></span>
+                        <!-- CHOSEN EXAM & TASK -->
+                        <div id="current-box" class="w-100 w-sm-75 mx-auto text-start" style="display:none;">
+                            Currently studying: <span id="current-subject"></span><br>
+                            Task: <span id="current-task"></span>
+                        </div>
+
+                        <!-- EXAM CONTROL BUTTONS -->
+                        <div class="control-buttons">
+                            <button onclick="togglePauseResume()">
+                                Pause
+                            </button>
+                            <button onclick="restartTimer()">
+                                Restart
+                            </button>
+                            <select name="chosen-time" id="chosen-time" onchange="chooseTime()">
+                                <option>1 min</option>
+                                <option value="25">25 min</option>
+                                <option value="50">50 min</option>
+                                <option value="100">100 min</option>
+                            </select>
+                            <button onclick="startTimer()" disabled id="startTimer">
+                                Start
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- HISTORY | SESSIONS & MINUTES OF STUDY -->
+                    <div class="d-flex flex-column flex-sm-row align-items-stretch justify-content-between text-center gap-3 w-100">
+                        <div class="border w-100 bg-white p-3 rounded-4 shadow-sm">
+                            <h1 class="fw-bold mb-1">{% if sessions %} {{ sessions }} {% else %} 0 {% endif %}</h1>
+                            <p class="text-secondary mb-0">Sessions Completed</p>
+                        </div>
+                        <div class="border w-100 bg-white p-3 rounded-4 shadow-sm">
+                            <h1 class="fw-bold mb-1" id="minutes-studied">
+                                {% if minutes %} {{ minutes }} {% else %} 0 {% endif %}
+                            </h1>
+                            <p class="text-secondary mb-0">Minutes Studied</p>
+
+                            <form id="pomodoroForm">
+                                {% csrf_token %}
+                                <input type="hidden" name="minutes" id="minutesInput">
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- CHOOSE EXAM -->
+                    <div class="border p-4 rounded-4 bg-white w-100 shadow-sm">
+                        <h2 class="h5 fw-bold mb-3">Choose Exam</h2>
+                        <form action="/select_exam" method="post">
+                            {% csrf_token %}
+                            <select name="exam_id" id="exam_id" class="task-input rounded-4 mb-2 w-100 p-2">
+                                <option value="" selected disabled>Select</option>
+                                {% for exam in exams %}
+                                <option value="{{ exam.id }}">{{ exam.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+
+                    <!-- CHOOSE TASK -->
+                    <div class="border p-4 rounded-4 bg-white w-100 shadow-sm">
+                        <label for="task_id" class="h5 fw-bold mb-3 d-block">Choose Task</label>
+                        <select name="task_id" id="task_id" class="task-input rounded-4 mb-2 w-100 p-2">
+                            <option value="" id="no-option" selected disabled>Select</option>
+                            <option value=""></option>
+                        </select>
+                    </div>
+
                 </div>
-
-                <!-- EXAM CONTROL BUTTONS -->
-                <div class="control-buttons">
-                    <button onclick="togglePauseResume()">
-                        Pause
-                    </button>
-                    <button onclick="restartTimer()">
-                        Restart
-                    </button>
-                    <select name="chosen-time" id="chosen-time" onchange="chooseTime()">
-                        <option>1 min</option>
-                        <option value="25">25 min</option>
-                        <option value="50">50 min</option>
-                        <option value="100">100 min</option>
-                    </select>
-                    <button onclick="startTimer()" disabled id="startTimer">
-                        Start
-                    </button>
-                </div>
-            </div>
-
-            <!-- HISTORY | SESSIONS & MINUTES OF STUDY -->
-            <div class="d-flex align-items-center justify-content-between text-center gap-3 w-100">
-                <div class="border w-100 bg-white p-3 rounded">
-                    <h1 class="fw-bold">{% if sessions %} {{ sessions }} {% else %} 0 {% endif %}</h1 class="fw-bold">
-                    <p class="text-secondary">Sessions Completed</p>
-                </div>
-                <div class="border w-100 bg-white p-3 rounded">
-                    <h1 class="fw-bold" id="minutes-studied">
-                        {% if minutes %} {{ minutes }} {% else %} 0 {% endif %}
-                    </h1>
-                    <p class="text-secondary">Minutes Studied</p>
-
-                    <form id="pomodoroForm">
-                        {% csrf_token %}
-                        <input type="hidden" name="minutes" id="minutesInput">
-                    </form>
-                </div>
-            </div>
-
-            <!-- CHOOSE EXAM -->
-            <div class="border p-4 m-4 w-100">
-                <h2>Choose Exam</h2>
-                <form action="/select_exam" method="post">
-                    {% csrf_token %}
-                    <select name="exam_id" id="exam_id" class="task-input rounded-4 mb-2 w-100 p-2">
-                        <option value="" selected disabled>Select</option>
-                        {% for exam in exams %}
-                        <option value="{{ exam.id }}">{{ exam.title }}</option>
-                        {% endfor %}
-                    </select>
-                </form>
-            </div>
-
-            <!-- CHOOSE TASK -->
-            <div class="border p-4 m-4 w-100">
-                <label for="task_id">Choose Task</label>
-                <select name="task_id" id="task_id" class="task-input rounded-4 mb-2 w-100 p-2">
-                    <option value="" id="no-option" selected disabled>Select</option>
-                    <option value=""></option>
-                </select>
             </div>
         </div>
     </section>
