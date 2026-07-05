@@ -1,11 +1,11 @@
 let timer;
-let minutes = 1;
+let minutes = 25;
 let seconds = 0;
 let isPaused = false;
 let enteredTime = null;
 
-// default duration for first run
-let originalDuration = 1;
+// default duration for first run (matches the selected option in the dropdown)
+let originalDuration = 25;
 
 function startTimer() {
     clearInterval(timer);

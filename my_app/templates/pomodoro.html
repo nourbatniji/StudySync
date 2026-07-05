@@ -86,7 +86,7 @@
                     
                     <div class="main w-100 my-3">
                         <p>📚 Study Session</p>
-                        <div id="timer">1:00</div>
+                        <div id="timer">25:00</div>
                         <p>Ready to focus?</p>
 
                         <!-- CHOSEN EXAM & TASK -->
@@ -104,10 +104,11 @@
                                 Restart
                             </button>
                             <select name="chosen-time" id="chosen-time" onchange="chooseTime()">
-                                <option>1 min</option>
-                                <option value="25">25 min</option>
-                                <option value="50">50 min</option>
-                                <option value="100">100 min</option>
+                                <option value="15">15 min</option>
+                                <option value="25" selected>25 min</option>
+                                <option value="45">45 min</option>
+                                <option value="60">60 min</option>
+                                <option value="90">90 min</option>
                             </select>
                             <button onclick="startTimer()" disabled id="startTimer">
                                 Start
