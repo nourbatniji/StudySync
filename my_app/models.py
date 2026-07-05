@@ -1,84 +1,89 @@
-from django.db import models
-import re, bcrypt
-from datetime import datetime, date
+import re
+from datetime import date, datetime
 
-# Create your models here.
+import bcrypt
+from django.db import models
+
+EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+PASSWORD_REGEX = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,128}$')
+URL_REGEX = re.compile(r'^(https?|ftp)://[^\s/$.?#].[^\s]*$')
+
+
 class UserManager(models.Manager):
     def validate_signup(self, postData):
         errors = {}
-        email_regex = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-        pass_regex = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+        username = postData.get('username', '').strip()
+        email = postData.get('email', '').strip()
+        password = postData.get('password', '')
 
-        if len(postData['username']) < 3 or len(postData['username']) > 25:
-            errors['username_valid'] = 'Minimum 3 characters required'
+        if not 3 <= len(username) <= 25:
+            errors['username'] = 'Name must be between 3 and 25 characters.'
+        elif not username.replace(' ', '').isalpha():
+            errors['username'] = 'Name must contain letters only.'
 
-        if not postData['username'].isalpha():
-            errors['username_letter'] = 'Username must be letters only'
+        if not EMAIL_REGEX.match(email):
+            errors['email'] = 'Invalid email format.'
+        elif self.filter(email=email).exists():
+            errors['email'] = 'This email is already registered.'
 
-        if not email_regex.match(postData['email']):
-            errors['email_valid'] = 'Invalid Email format'
+        if not PASSWORD_REGEX.match(password):
+            errors['password'] = ('Password must be 8-128 characters and include an uppercase letter, '
+                                  'a lowercase letter, a number, and a special character (@$!%*?&).')
 
-        if is_exist(postData['email']) == True: 
-            errors['not_unique']  = 'Email already exists'
-
-        if not pass_regex.match(postData['password']) or len(postData['password']) > 128:
-            errors['password_valid'] = 'Minimum 8 characters required'
-
-        if postData['password'] != postData['confirm_pw']:
-            errors['matching_pw'] = 'Passwords do not match!'
+        if password != postData.get('confirm_pw', ''):
+            errors['confirm_pw'] = 'Passwords do not match.'
 
         return errors
-    
+
     def validate_login(self, postData):
-        login_errors = {}
-        email_regex = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-        pass_regex = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+        errors = {}
+        email = postData.get('email', '').strip()
 
-        if not email_regex.match(postData['email']):
-            login_errors['login_email_valid'] = 'Invalid Email format'
+        if not EMAIL_REGEX.match(email):
+            errors['email'] = 'Invalid email format.'
+        elif not self.filter(email=email).exists():
+            errors['email'] = 'No account found with this email.'
 
-        if not is_exist(postData['email']):
-            login_errors['login_email_noexist'] = 'Email does not exist'
+        if not postData.get('password', ''):
+            errors['password'] = 'Password is required.'
 
-        if not pass_regex.match(postData['password']) or len(postData['password']) > 128:
-            login_errors['login_pass_valid'] = 'Minimum 8 characters required'
-
-        return login_errors
+        return errors
 
 
 class SessionManager(models.Manager):
-    def validate_session(self, postData):
-        sess_errors = {}
-        # Title
-        if len(postData['title']) < 2:
-            sess_errors['title'] = 'Title must be at least 2 characters.' 
+    def validate_session(self, postData, session_id=None):
+        errors = {}
 
-        # Date
-        now = datetime.now().strftime("%Y-%m-%d")
-        if postData['sess_date'] < now :
-            sess_errors['date'] = 'Date must be in the future.' 
-        
-        # Url
-        url_regex = re.compile(r'^(https?|ftp):\/\/[^\s\/$.?#].[^\s]*$')
-        if not url_regex.match(postData['meet_link']):
-            sess_errors['meet_link'] = 'Invalid URL' 
-        if url_exist(postData['meet_link']):
-            sess_errors['not_unique'] = 'This url is used'
+        if len(postData.get('title', '')) < 2:
+            errors['title'] = 'Title must be at least 2 characters.'
 
+        today = date.today().strftime('%Y-%m-%d')
+        if postData.get('sess_date', '') < today:
+            errors['date'] = 'Date must be in the future.'
 
-        return sess_errors
+        meet_link = postData.get('meet_link', '')
+        if not URL_REGEX.match(meet_link):
+            errors['meet_link'] = 'Invalid URL.'
+        else:
+            duplicates = self.filter(meet_link=meet_link)
+            if session_id:
+                duplicates = duplicates.exclude(id=session_id)
+            if duplicates.exists():
+                errors['not_unique'] = 'This URL is already used by another session.'
+
+        return errors
 
 
 class ExamManager(models.Manager):
     def validate_exam(self, postData):
-        exam_errors = {}
-        if len(postData['title']) < 2:
-            exam_errors['title'] = 'Exam name must be at least 2 Characters'
-        now = datetime.now().strftime('%Y-%m-%d')
-        if postData['exam_date'] < now:
-            exam_errors['exam_date'] = 'Exam cannot be in the past'
-        return exam_errors
-   
+        errors = {}
+        if len(postData.get('title', '')) < 2:
+            errors['title'] = 'Exam name must be at least 2 characters.'
+        today = date.today().strftime('%Y-%m-%d')
+        if postData.get('exam_date', '') < today:
+            errors['exam_date'] = 'Exam cannot be in the past.'
+        return errors
+
 
 class User(models.Model):
     username = models.CharField(max_length=45)
@@ -139,19 +144,19 @@ class Exam(models.Model):
             'hours': int(total_per_day // 60),
             'minutes': int(total_per_day % 60)
         }
+    @staticmethod
     def get_total_daily_required_minutes(user):
+        """Total daily required time across all of a user's exams (all tasks included)."""
         total_minutes = 0
-        exams = Exam.objects.filter(user_id=user)
-        for exam in exams:
+        for exam in Exam.objects.filter(user_id=user):
             data = exam.all_required_per_day()
-            exam_minutes = data['hours'] * 60 + data['minutes']
-            total_minutes += exam_minutes
+            total_minutes += data['hours'] * 60 + data['minutes']
 
         return {
             'hours': total_minutes // 60,
             'minutes': total_minutes % 60
-        } 
-        
+        }
+
 
     def done_task_count(self):
         return self.exam_tasks.filter(completed=True).count()
@@ -172,12 +177,11 @@ class Exam(models.Model):
             return 0
         return (self.get_completed_tasks()/total_tasks)*100
     
+    @staticmethod
     def calculate_daily_percentage(user):
-    # remaining required time (not completed yet)
-        remaining = get_all_exams_required_hrs(user)          # {'hours': h, 'minutes': m}
-
-        # total required time (all tasks for this user)
-        total = get_total_daily_required_minutes(user)    # {'hours': h, 'minutes': m}
+        """% of today's required study time already done (completed tasks vs all tasks)."""
+        remaining = get_all_exams_required_hrs(user)                 # {'hours': h, 'minutes': m}
+        total = Exam.get_total_daily_required_minutes(user)          # {'hours': h, 'minutes': m}
 
         remaining_minutes = remaining['hours'] * 60 + remaining['minutes']
         total_minutes = total['hours'] * 60 + total['minutes']
@@ -192,10 +196,7 @@ class Exam(models.Model):
 
     #number of days left till the exam
     def days_left(self):
-        now = str(date.today())
-        current_time = datetime.strptime(now, '%Y-%m-%d').date()
-        days_left = self.exam_date - current_time
-        return days_left.days
+        return (self.exam_date - date.today()).days
     
     def urgency_color(self):
         days = self.days_left()
@@ -263,41 +264,33 @@ class PomodoroHistory(models.Model):
 def create_user(postData):
     hashed_pw = bcrypt.hashpw(postData['password'].encode(), bcrypt.gensalt()).decode()
     return User.objects.create(
-        username=postData['username'],
-        email=postData['email'], 
+        username=postData['username'].strip(),
+        email=postData['email'].strip(),
         password=hashed_pw)
 
-def is_exist(email): 
-    return User.objects.filter(email=email).exists()
-
-def get_user_by_email(email):
-    return User.objects.filter(email=email)
+def authenticate(email, password):
+    """Return the user if email + password are correct, otherwise None."""
+    user = User.objects.filter(email=email.strip()).first()
+    if user and bcrypt.checkpw(password.encode(), user.password.encode()):
+        return user
+    return None
 
 def get_user_by_id(id):
     return User.objects.get(id=id)
 
 def update_minutes(postData, user_id):
-    minutes_str = postData.get("minutes", "").strip()
-
-    if not minutes_str:
-        return
-
     try:
-        minutes = int(minutes_str)
+        minutes = int(postData.get('minutes', '').strip())
     except ValueError:
-        return
-    
+        return None
+
     user = User.objects.get(id=user_id)
     user.minutes_studied += minutes
     user.sessions_completed += 1
     user.save()
 
-    PomodoroHistory.objects.create(
-    user=user,
-    minutes=minutes
-
-    )
-    return user.minutes_studied    
+    PomodoroHistory.objects.create(user=user, minutes=minutes)
+    return user.minutes_studied
 
 
 #=================================================================
@@ -322,20 +315,7 @@ def update_exam(postData):
     exam.exam_date = postData['exam_date']
     exam.save()
 
-def get_total_daily_required_minutes(user):
-    total_minutes = 0
-    exams = Exam.objects.filter(user_id=user)
-    for exam in exams:
-        data = exam.all_required_per_day()
-        exam_minutes = data['hours'] * 60 + data['minutes']
-        total_minutes += exam_minutes
-
-    return {
-        'hours': total_minutes // 60,
-        'minutes': total_minutes % 60
-    } 
-
-#get all required hours and exclude the completed  
+#get all required hours and exclude the completed
 def get_all_exams_required_hrs(user):
     T_hours = 0
     T_minutes = 0
@@ -377,15 +357,6 @@ def delete_task(postData):
     task = Task.objects.get(id = postData['task_id'])
     task.delete()
 
-def get_tasks(exam_id):
-    tasks = Task.objects.filter(exam_id=exam_id)
-    return tasks
-
-def log_task(postData):
-    task = Task.objects.get(id=postData['task_id'])
-    task.completed = not task.completed
-    task.save()
-
 #------------------------------------------------------------------
 # SESSION
 def create_session(postData):
@@ -408,9 +379,6 @@ def delete_session(postData):
 def get_all_sessions():
     return Session.objects.all()
 
-def url_exist(meet_link):
-    return Session.objects.filter(meet_link=meet_link).exists()
-
 def update_session(postData):
     session = Session.objects.get(id=postData['session_id'])
     session.title = postData['title']
@@ -419,9 +387,3 @@ def update_session(postData):
     session.duration= postData['duration']
     session.meet_link = postData['meet_link']
     session.save()
-
-def attend_session(postData):
-    session = Session.objects.get(id=postData['session_id'])
-    user = User.objects.get(id=postData['user_id'])
-    session.attendees.add(user)
-    return session.attendees.count()

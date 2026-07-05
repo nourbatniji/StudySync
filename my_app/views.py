@@ -1,378 +1,301 @@
-from django.shortcuts import render, redirect
-from . import models 
-from .models import User, Session, Exam, Task, PomodoroHistory
-import bcrypt
-from datetime import date, timedelta, datetime
-from django.http import JsonResponse
+from datetime import timedelta
+
 from django.db.models import Sum
 from django.db.models.functions import TruncDate
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
 from django.utils import timezone
 
+from . import models
+from .decorators import login_required, post_only
+from .models import Exam, PomodoroHistory, Session, Task, User
 
 
-# Create your views here.
-#=================================================================
-# AUTHERNTICATION
+# =================================================================
+# AUTHENTICATION
+
 def index(request):
-    request.session['is_logged'] = False
+    if request.session.get('is_logged'):
+        return redirect('/dashboard')
     return render(request, 'index.html')
+
 
 def signup_page(request):
     return render(request, 'signup.html')
 
+
+@post_only
 def signup(request):
-    if request.method == 'POST':
-        errors = User.objects.validate_signup(request.POST)
-        if errors:
-            context = {
-                'errors' : errors
-            }
-            request.session['is_logged'] = False
-            return render(request, 'signup.html', context)
-        else:
-            user = models.create_user(request.POST)
-            print('registerd')
+    errors = User.objects.validate_signup(request.POST)
+    if errors:
+        context = {
+            'errors': errors,
+            'username': request.POST.get('username', ''),
+            'email': request.POST.get('email', ''),
+        }
+        return render(request, 'signup.html', context)
+
+    user = models.create_user(request.POST)
+    request.session['user_id'] = user.id
+    request.session['is_logged'] = True
+    return redirect('/dashboard')
+
+
+def login_page(request):
+    return render(request, 'login.html')
+
+
+@post_only
+def login(request):
+    email = request.POST.get('email', '')
+    errors = User.objects.validate_login(request.POST)
+
+    if not errors:
+        user = models.authenticate(email, request.POST.get('password', ''))
+        if user:
             request.session['user_id'] = user.id
             request.session['is_logged'] = True
             return redirect('/dashboard')
+        errors['password'] = 'Incorrect password.'
 
-def login_page(request):
-    request.session['is_logged'] = False
-    return render(request, 'login.html')
+    return render(request, 'login.html', {'errors': errors, 'email': email})
 
-def login(request):
-    if request.method == 'POST':
-        errors = User.objects.validate_login(request.POST)
-        user = models.get_user_by_email(request.POST['email'])
-        if errors:
-            context = {
-                'errors' : errors
-            }
-            request.session['is_logged'] = False
-            return render(request, 'login.html', context)
-        else:
-            if user:
-                logged_user = user[0]
-                if bcrypt.checkpw(request.POST['password'].encode(), logged_user.password.encode()):
-                    request.session['user_id'] = logged_user.id
-                    request.session['is_logged'] = True
-                    print("logged")
-                    return redirect('/dashboard')
-                else:
-                    request.session['is_logged'] = False
-                    errors['incorrect_pw'] = "Incorrect Password"
-                    context = {
-                        "errors" : errors
-                    }
-                    return render(request, 'login.html', context)
-                
+
 def sign_out(request):
     request.session.flush()
-    return render(request,'index.html')
+    return redirect('/')
 
 
-
-#=================================================================
+# =================================================================
 # DASHBOARD
 
-def daily_hours_api(request):
-    # 1) get current user id from session
-    user_id = request.session.get('user_id')
-    if not user_id:
-        return JsonResponse({'error': 'not logged in'}, status=401)
+@login_required
+def dashboard(request):
+    user = models.get_user_by_id(request.session['user_id'])
+    exams = models.get_all_exams_for_user(user)
 
-    # 2) date range (last 7 days)
+    panic_level = max((exam.get_panic_level() for exam in exams), default=0)
+
+    # Weekly study target (daily requirement x 7)
+    daily_req = Exam.get_total_daily_required_minutes(user)
+    weekly_target_minutes = (daily_req['hours'] * 60 + daily_req['minutes']) * 7
+
+    context = {
+        'user': user,
+        'exams': exams,
+        'total_exams': exams.count(),
+        'all_minutes': user.minutes_studied,
+        'hours': user.minutes_studied // 60,
+        'minutes': user.minutes_studied % 60,
+        'sessions': user.sessions_completed,
+        'today_required_hours': models.get_all_exams_required_hrs(user),
+        'today_required_hours_all_tasks': daily_req,
+        'daily_percentage': Exam.calculate_daily_percentage(user),
+        'panic_level': panic_level,
+        'weekly_target_hours': weekly_target_minutes // 60,
+        'weekly_target_mins': weekly_target_minutes % 60,
+    }
+    return render(request, 'dashboard.html', context)
+
+
+@login_required
+def daily_hours_api(request):
+    """Total study hours per day for the last 7 days (for the dashboard chart)."""
+    user_id = request.session['user_id']
     today = timezone.localdate()
     week_start = today - timedelta(days=6)
 
-    # 3) group PomodoroHistory by DATE(created_at) and sum minutes
-    qs = (
+    rows = (
         PomodoroHistory.objects
-        .filter(
-            user_id=user_id,                     # ✅ simpler + correct
-            created_at__date__gte=week_start,
-            created_at__date__lte=today,
-        )
-        .annotate(day=TruncDate('created_at'))  # group by day
+        .filter(user_id=user_id, created_at__date__range=(week_start, today))
+        .annotate(day=TruncDate('created_at'))
         .values('day')
         .annotate(total_minutes=Sum('minutes'))
-        .order_by('day')
     )
+    minutes_by_day = {row['day']: row['total_minutes'] or 0 for row in rows}
 
-    # DEBUG – leave this for now to see what’s happening in the terminal
-    print("DEBUG: Pomo rows for user", user_id)
-    for row in qs:
-        print(row)
-
-    # 4) map {date: minutes}
-    minutes_by_day = {row['day']: row['total_minutes'] or 0 for row in qs}
-
-    labels = []
-    data = []
-
-    # 5) always return 7 days (even if 0)
+    labels, data = [], []
     for i in range(6, -1, -1):
         day = today - timedelta(days=i)
-        labels.append(day.strftime('%a'))      # Fri, Sat...
-
-        minutes = minutes_by_day.get(day, 0)
-        data.append(round(minutes / 60, 1))    # minutes → hours
+        labels.append(day.strftime('%a'))
+        data.append(round(minutes_by_day.get(day, 0) / 60, 1))
 
     return JsonResponse({'labels': labels, 'data': data})
-def dashboard(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    user_id = request.session["user_id"]
-    user = User.objects.get(id=user_id)
 
-    # mins & hrs studied
-    hours = user.minutes_studied // 60
-    mins = user.minutes_studied % 60
-    
-    # Calculate overall panic level (highest panic level among all exams)
-    exams = models.get_all_exams_for_user(user)
-    panic_level = 0
-    if exams:
-        panic_level = max(exam.get_panic_level() for exam in exams)
-    
-    # Calculate weekly study target (daily requirement × 7)
-    daily_req = Exam.get_total_daily_required_minutes(user)
-    weekly_target_minutes = (daily_req['hours'] * 60 + daily_req['minutes']) * 7
-    weekly_target_hours = weekly_target_minutes // 60
-    weekly_target_mins = weekly_target_minutes % 60
 
-    context = {
-        'user' : models.get_user_by_id(request.session['user_id']),
-        'exams' : exams,
-        'total_exams' : Exam.objects.filter(user_id=user).count(),
-        'all_minutes' : user.minutes_studied,
-        'hours' : hours, 
-        'minutes': mins,
-        'sessions' : user.sessions_completed,
-        'today_required_hours': models.get_all_exams_required_hrs(user),
-        'today_required_hours_all_tasks' : daily_req,
-        'daily_percentage' : Exam.calculate_daily_percentage(user),
-        'panic_level': panic_level,
-        'weekly_target_hours': weekly_target_hours,
-        'weekly_target_mins': weekly_target_mins
-    }
-    return render(request, 'dashboard.html', context) 
-
-# ---------------------------------------------------------------
+# =================================================================
 # EXAMS
+
+@login_required
 def exams_page(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
     user = models.get_user_by_id(request.session['user_id'])
-    user_id = user.id
     context = {
-        'userId'  : user_id,
-        'exams'  : models.get_all_exams_for_user(user),
+        'userId': user.id,
+        'exams': models.get_all_exams_for_user(user),
     }
     return render(request, 'exam.html', context)
 
+
+@login_required
+@post_only
 def add_exam(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    if request.method == 'POST':
-        errors = Exam.objects.validate_exam(request.POST)
-        print(errors)
-        if errors:
-            print(errors)
-            return JsonResponse({
-                'success' : False,
-                'errors' : errors
-            })
-        else:
-            models.create_exam(request.POST)
-            return JsonResponse({
-                'success' : True
-            })
-          
-def delete_exam(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    if request.method == 'POST':
-        models.delete_exam(request.POST)
-        return redirect('/exams_page')
-      
+    errors = Exam.objects.validate_exam(request.POST)
+    if errors:
+        return JsonResponse({'success': False, 'errors': errors})
+    models.create_exam(request.POST)
+    return JsonResponse({'success': True})
+
+
+@login_required
+@post_only
 def update_exam(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    if request.method == 'POST':
-        errors = Exam.objects.validate_exam(request.POST)
-        if errors:
-            return JsonResponse({
-                'success' : False,
-                'errors' : errors
-            })
-        else:
-            models.update_exam(request.POST)
-            return JsonResponse({
-                'success' : True
-            })
-        
+    errors = Exam.objects.validate_exam(request.POST)
+    if errors:
+        return JsonResponse({'success': False, 'errors': errors})
+    models.update_exam(request.POST)
+    return JsonResponse({'success': True})
+
+
+@login_required
+@post_only
+def delete_exam(request):
+    models.delete_exam(request.POST)
+    return redirect('/exams_page')
+
+
+@login_required
 def get_exam_task(request, taskId):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    task = Task.objects.filter(id=taskId).values('exam_id','exam_id__title','id', 'title', 'completed')
+    task = Task.objects.filter(id=taskId).values(
+        'exam_id', 'exam_id__title', 'id', 'title', 'completed'
+    )
     return JsonResponse(list(task), safe=False)
-# ---------------------------------------------------------------
+
+
+# =================================================================
 # TASKS
 
+@login_required
+@post_only
 def add_task(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    if request.method == 'POST':
-        models.create_task(request.POST)
-        return redirect('/exams_page')
+    models.create_task(request.POST)
+    return redirect('/exams_page')
 
+
+@login_required
+@post_only
 def check_task(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    if request.method == 'POST':
-        task = models.check_task(request.POST)
-        
-        return JsonResponse({
-            'success' : True,
-            'data' : Exam.get_completed_tasks(task.exam_id)
-        })
-  
+    task = models.check_task(request.POST)
+    return JsonResponse({
+        'success': True,
+        'data': task.exam_id.get_completed_tasks(),
+    })
 
+
+@login_required
+@post_only
 def delete_task(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    if request.method == 'POST':
-        models.delete_task(request.POST)
-        return redirect('/exams_page')
-    
+    models.delete_task(request.POST)
+    return redirect('/exams_page')
+
+
+@login_required
 def get_tasks(request, exam_id):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    tasks = Task.objects.filter(exam_id=exam_id, completed=False).values('id', 'title', 'completed')
+    tasks = Task.objects.filter(exam_id=exam_id, completed=False).values(
+        'id', 'title', 'completed'
+    )
     return JsonResponse(list(tasks), safe=False)
 
-#=================================================================
+
+@login_required
+@post_only
+def log_task(request):
+    models.check_task(request.POST)
+    return redirect('/pomodoro_page')
+
+
+# =================================================================
 # SESSIONS
 
+@login_required
 def sessions_page(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
     user = models.get_user_by_id(request.session['user_id'])
-    user_id = user.id
     context = {
-        'userId'  : user_id,
-        'sessions'  : models.get_all_sessions(),
+        'userId': user.id,
+        'sessions': models.get_all_sessions(),
     }
     return render(request, 'session.html', context)
- 
+
+
+@login_required
+@post_only
 def add_session(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    if request.method == 'POST':
-        errors = Session.objects.validate_session(request.POST)
-        if errors:
-            print(errors)
-            return JsonResponse({
-                'success' : False,
-                'errors' : errors
-            })
-        else:
-            models.create_session(request.POST)
-            return JsonResponse({
-                'success' : True
-            })
-          
+    errors = Session.objects.validate_session(request.POST)
+    if errors:
+        return JsonResponse({'success': False, 'errors': errors})
+    models.create_session(request.POST)
+    return JsonResponse({'success': True})
+
+
+@login_required
+@post_only
 def update_session(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    if request.method == 'POST':
-        update_errors = Session.objects.validate_session(request.POST)
-        print(update_errors)
-        if update_errors:
-            print(update_errors)
-            return JsonResponse({
-                'success' : False,
-                'update_errors' : update_errors
-            })
-        else:
-            models.update_session(request.POST)
-            return JsonResponse({
-                'success' : True
-            })
-  
+    errors = Session.objects.validate_session(request.POST, session_id=request.POST.get('session_id'))
+    if errors:
+        return JsonResponse({'success': False, 'update_errors': errors})
+    models.update_session(request.POST)
+    return JsonResponse({'success': True})
+
+
+@login_required
+@post_only
 def delete_session(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    if request.method == 'POST':
-        models.delete_session(request.POST)
-        return redirect('/sessions_page')
-      
+    models.delete_session(request.POST)
+    return redirect('/sessions_page')
+
+
+@login_required
+@post_only
 def attend_session(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    if request.method == 'POST':
-        session_id = request.POST.get('session_id')
-        user_id = request.POST.get('user_id')
-        
-        session = Session.objects.get(id=session_id)
-        user = User.objects.get(id=user_id)
-        
-        # Check if user is already attending
-        if session.attendees.filter(id=user_id).exists():
-            return JsonResponse({
-                'success': False,
-                'message': 'You are already attending this session'
-            })
-        
-        # Add user to attendees
-        session.attendees.add(user)
-        
+    session = Session.objects.get(id=request.POST['session_id'])
+    user = models.get_user_by_id(request.POST['user_id'])
+
+    if session.attendees.filter(id=user.id).exists():
         return JsonResponse({
-            'success': True,
-            'attendee_count': session.attendees.count(),
-            'message': 'Successfully registered for session'
+            'success': False,
+            'message': 'You are already attending this session',
         })
 
-    
+    session.attendees.add(user)
+    return JsonResponse({
+        'success': True,
+        'attendee_count': session.attendees.count(),
+        'message': 'Successfully registered for session',
+    })
 
 
-
-#=================================================================
+# =================================================================
 # POMODORO
 
+@login_required
 def pomodoro_page(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    user_id = request.session["user_id"]
-    user = User.objects.get(id=user_id)
-    print("User minutes in DB:", user.minutes_studied)
-
+    user = models.get_user_by_id(request.session['user_id'])
     context = {
-        'exams'  : models.get_all_exams_for_user(user),
-        'minutes' : user.minutes_studied,
-        'sessions' : user.sessions_completed,
+        'exams': models.get_all_exams_for_user(user),
+        'minutes': user.minutes_studied,
+        'sessions': user.sessions_completed,
     }
     return render(request, 'pomodoro.html', context)
 
+
+@login_required
+@post_only
 def pomodoroForm(request):
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    if request.method == "POST":
-        print("POST data in pomodoroForm:", request.POST)  # DEBUG
-        user_id = request.session["user_id"]
-        models.update_minutes(request.POST, user_id)
-    return redirect('/pomodoro_page')
-
-def log_task(request): 
-    if not request.session.get('is_logged'):
-        return render(request,'not_found.html')
-    if request.method == "POST":
-        models.log_task(request.POST)
-
+    models.update_minutes(request.POST, request.session['user_id'])
     return redirect('/pomodoro_page')
 
 
-# ==================================================================================================================
-def about(request):    
+# =================================================================
+# ABOUT
+
+def about(request):
     return render(request, 'about.html')
