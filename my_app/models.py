@@ -317,17 +317,15 @@ def update_exam(postData):
 
 #get all required hours and exclude the completed
 def get_all_exams_required_hrs(user):
-    T_hours = 0
-    T_minutes = 0
+    total_minutes = 0
 
     for exam in get_all_exams_for_user(user):
         data = exam.total_hours_per_day()
-        T_hours += data['hours']
-        T_minutes += data['minutes']
+        total_minutes += data['hours'] * 60 + data['minutes']
 
     return {
-        'hours': T_hours,
-        'minutes': T_minutes
+        'hours': total_minutes // 60,
+        'minutes': total_minutes % 60
     }
 
 #------------------------------------------------------------------
