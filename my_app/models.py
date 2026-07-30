@@ -1,8 +1,12 @@
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import bcrypt
 from django.db import models
+from django.db.models import Sum
+from django.utils import timezone
+
+from .utils import format_minutes
 
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
 PASSWORD_REGEX = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,128}$')
@@ -323,10 +327,39 @@ def get_all_exams_required_hrs(user):
         data = exam.total_hours_per_day()
         total_minutes += data['hours'] * 60 + data['minutes']
 
-    return {
-        'hours': total_minutes // 60,
-        'minutes': total_minutes % 60
-    }
+    return format_minutes(total_minutes)
+
+
+#time already put in today = total daily requirement (all tasks) minus what's
+#still remaining (get_all_exams_required_hrs excludes completed tasks)
+def get_all_exams_completed_hrs(user):
+    remaining = get_all_exams_required_hrs(user)
+    total = Exam.get_total_daily_required_minutes(user)
+
+    remaining_minutes = remaining['hours'] * 60 + remaining['minutes']
+    total_minutes = total['hours'] * 60 + total['minutes']
+
+    completed_minutes = max(total_minutes - remaining_minutes, 0)
+    return format_minutes(completed_minutes)
+
+
+#the trailing 7-day window (today inclusive) used for "this week" stats.
+#shared by the weekly-hours card and the dashboard chart so they can never
+#drift apart on date range again.
+def get_current_week_range():
+    today = timezone.localdate()
+    return today - timedelta(days=6), today
+
+
+#total study minutes actually logged in the trailing 7 days, from the same
+#PomodoroHistory table (and window) the dashboard chart reads from - not the
+#User.minutes_studied lifetime counter, which is a different, unrelated total.
+def get_weekly_study_minutes(user):
+    week_start, today = get_current_week_range()
+    total = PomodoroHistory.objects.filter(
+        user=user, created_at__date__range=(week_start, today)
+    ).aggregate(total=Sum('minutes'))['total'] or 0
+    return total
 
 #------------------------------------------------------------------
 # TASK

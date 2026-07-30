@@ -115,7 +115,7 @@
                             </p>
                         </div>
 
-                        <p class="fs-4 pb-0 mb-0">{{ today_required_hours.hours }}h {{ today_required_hours.minutes }}m
+                        <p class="fs-4 pb-0 mb-0">{{ today_completed_hours.hours }}h {{ today_completed_hours.minutes }}m
                             /
                             {{ today_required_hours_all_tasks.hours }}h {{ today_required_hours_all_tasks.minutes }}m
                         </p>
@@ -198,9 +198,9 @@
                                 <i class="fa-regular fa-clock"></i>
                             </div>
                             <h4 class="fw-bold mb-1">
-                                {{ hours|default:0 }}.{% if minutes %}{{ minutes }}{% else %}00{% endif %} hrs
+                                {{ weekly_hours_display|default:"0h 0m" }}
                             </h4>
-                            <p class="bottom text-secondary mb-0">Target: {{ weekly_target_hours|default:0 }}{% if weekly_target_mins %}.{{ weekly_target_mins }}{% endif %} hrs/week</p>
+                            <p class="bottom text-secondary mb-0">Target: {{ weekly_target_display|default:"0h 0m" }}/week</p>
                         </div>
 
                         <!-- TOTAL EXAMS -->

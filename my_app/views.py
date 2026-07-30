@@ -4,11 +4,11 @@ from django.db.models import Sum
 from django.db.models.functions import TruncDate
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
-from django.utils import timezone
 
 from . import models
 from .decorators import login_required, post_only
 from .models import Exam, PomodoroHistory, Session, Task, User
+from .utils import format_duration
 
 
 # =================================================================
@@ -76,34 +76,47 @@ def dashboard(request):
 
     panic_level = max((exam.get_panic_level() for exam in exams), default=0)
 
-    # Weekly study target (daily requirement x 7)
+    # Weekly study target = daily requirement x 7 (an exact split, not an
+    # independent estimate - dividing it back by 7 always reproduces the
+    # daily requirement exactly, so the two numbers can never disagree).
     daily_req = Exam.get_total_daily_required_minutes(user)
-    weekly_target_minutes = (daily_req['hours'] * 60 + daily_req['minutes']) * 7
+    daily_req_minutes = daily_req['hours'] * 60 + daily_req['minutes']
+    weekly_target_minutes = daily_req_minutes * 7
+
+    # "This week" = the same trailing 7-day PomodoroHistory window the chart
+    # uses, NOT user.minutes_studied (a separate lifetime counter).
+    weekly_study_minutes = models.get_weekly_study_minutes(user)
 
     context = {
         'user': user,
         'exams': exams,
         'total_exams': exams.count(),
         'all_minutes': user.minutes_studied,
-        'hours': user.minutes_studied // 60,
-        'minutes': user.minutes_studied % 60,
+        'hours': weekly_study_minutes // 60,
+        'minutes': weekly_study_minutes % 60,
+        'weekly_hours_display': format_duration(weekly_study_minutes),
         'sessions': user.sessions_completed,
         'today_required_hours': models.get_all_exams_required_hrs(user),
+        'today_completed_hours': models.get_all_exams_completed_hrs(user),
         'today_required_hours_all_tasks': daily_req,
         'daily_percentage': Exam.calculate_daily_percentage(user),
         'panic_level': panic_level,
         'weekly_target_hours': weekly_target_minutes // 60,
         'weekly_target_mins': weekly_target_minutes % 60,
+        'weekly_target_display': format_duration(weekly_target_minutes),
     }
     return render(request, 'dashboard.html', context)
 
 
 @login_required
 def daily_hours_api(request):
-    """Total study hours per day for the last 7 days (for the dashboard chart)."""
+    """Total study hours per day for the last 7 days (for the dashboard chart).
+
+    Uses the same trailing 7-day window as the "Hours Studied This Week"
+    card (models.get_current_week_range) so the two can't drift apart.
+    """
     user_id = request.session['user_id']
-    today = timezone.localdate()
-    week_start = today - timedelta(days=6)
+    week_start, today = models.get_current_week_range()
 
     rows = (
         PomodoroHistory.objects
